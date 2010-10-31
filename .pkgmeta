@@ -1,0 +1,5 @@
+package-as: AdiBags_PT3Filter
+
+externals:
+  libs/LibPeriodicTable-3.1: svn://svn.wowace.com/wow/libperiodictable-3-1/mainline/trunk
+

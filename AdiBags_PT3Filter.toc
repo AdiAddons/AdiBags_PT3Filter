@@ -1,0 +1,19 @@
+## Interface: 40000
+
+## Title: AdiBags - PT3 filter
+## Notes: LibPeriodicTable-3.1 item filters for AdiBags.
+## Author: Adirelle
+## Version: @project-version@
+## X-Date: @project-date-iso@
+## Dependencies: AdiBags
+## OptionalDeps: LibPeriodicTable-3.1
+
+# LibStub is provided by AdiBags
+#@no-lib-strip@
+libs/LibPeriodicTable-3.1/LibPeriodicTable-3.1/LibPeriodicTable-3.1.lua
+libs/LibPeriodicTable-3.1/modules.xml
+#@end-no-lib-strip@
+
+Localization.lua
+AdiBags_PT3Filter.lua
+
