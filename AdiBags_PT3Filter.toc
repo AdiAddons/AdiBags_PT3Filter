@@ -10,8 +10,8 @@
 
 # LibStub is provided by AdiBags
 #@no-lib-strip@
-libs/LibPeriodicTable-3.1/LibPeriodicTable-3.1/LibPeriodicTable-3.1.lua
-libs/LibPeriodicTable-3.1/modules.xml
+libs\LibPeriodicTable-3.1\LibPeriodicTable-3.1\LibPeriodicTable-3.1.lua
+libs\LibPeriodicTable-3.1\modules.xml
 #@end-no-lib-strip@
 
 Localization.lua
