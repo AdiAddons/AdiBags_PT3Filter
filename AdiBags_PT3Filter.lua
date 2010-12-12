@@ -177,16 +177,6 @@ for name in addon:IterateCategories() do
 	categoryValues[name] = name
 end
 
-local function ValidateSets(...)
-	for i = 1, select('#', ...) do
-		local set = strtrim(select(i, ...))
-		if set ~= "" and not LPT:GetSetString(set) then
-			return format(L["Invalid PT3 set: %q"], set)
-		end
-	end
-	return true
-end
-
 local ruleOptionProto = {
 	type = 'group',
 	inline = true,
@@ -293,14 +283,15 @@ end
 function handlerProto:SetSets(info, value)
 	local sets = self:Get(info)
 	wipe(sets)
-	for set in gmatch(value, "[%.%w]+") do
-		tinsert(sets, set)
+	for set in gmatch(value, "[^\n]+") do
+		tinsert(sets, strtrim(set))
 	end
 	filter:UpdateRules()
 end
 
 function handlerProto:ValidateSets(info, value)
-	for set in gmatch(value, "[%.%w]+") do
+	for set in gmatch(value, "[^\n]+") do
+		set = strtrim(set)
 		if not LPT:GetSetString(set) then
 			return format(L["Unknown item set: %s"], set)
 		end
