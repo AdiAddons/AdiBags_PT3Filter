@@ -13,9 +13,10 @@ local L = setmetatable({}, {__index = addon.L})
 ns.L = L
 
 -- %Localization: adibags-pt3filter
--- THE END OF THE FILE IS UPDATED BY A SCRIPT
--- ANY CHANGE BELOW THESES LINES WILL BE LOST
--- CHANGES SHOULD BE MADE USING http://www.wowace.com/addons/adibags-pt3filter/localization/
+-- THE END OF THE FILE IS UPDATED BY https://github.com/Adirelle/wowaceTools/#updatelocalizationphp.
+-- ANY CHANGE BELOW THESES LINES WILL BE LOST.
+-- UPDATE THE TRANSLATIONS AT http://www.wowace.com/addons/adibags-pt3filter/localization/
+-- AND ASK THE AUTHOR TO UPDATE THIS FILE.
 
 -- @noloc[[
 
@@ -36,7 +37,6 @@ L["Dynamic section name"] = true
 L["Enter PT3 set names separated by spaces, commas or newlines."] = true
 L["Fixed bag section name."] = true
 L["Fixed section name"] = true
-L["Invalid PT3 set: %q"] = true
 L["Invalid index: %q"] = true
 L["LibPeriodicTable-3.1 filter"] = true
 L["Name"] = true
@@ -69,14 +69,13 @@ L["Dynamic section name index"] = "Index du nom de section dynamique."
 L["Enter PT3 set names separated by spaces, commas or newlines."] = "Entrez des noms d'ensemble PT3, séparés par des espaces, des virgules ou des retours à la ligne."
 L["Fixed bag section name."] = "Nom de section prédéfini."
 L["Fixed section name"] = "Nom de section prédéfini."
-L["Invalid PT3 set: %q"] = "Ensemble PT3 invalide : %q"
 L["Invalid index: %q"] = "Index invalide : %q"
 L["LibPeriodicTable-3.1 filter"] = "Filtre LibPeriodicTable-3.1"
 L["Name"] = "Nom"
 L["New Rule"] = "Nouvelle règle"
-L["PT3 set names look like 'This.Item.Set'. This settings allow to use any part of the matching item set name as the section name, e.g. 'This', 'Item' or 'Set'."] = "Les noms d'ensemble de PT3 ressemble à 'Ceci.Est.Un.Ensemble'. Ce réglage permet d'utiliser n'importe quelle partie comme nom de section, e.g. 'Ceci', 'Est', 'Un' ou 'Ensemble'."
 L["Positive numbers are counted from the beginning of the set name (1 = first part). Negative from end (-1 = last part)."] = "Les nombres positifs sont comptés depuis le début (1 = première partie), les negatifs depuis la fin (-1 = dernière partie)."
 L["Priority"] = "Priorité"
+L["PT3 set names look like 'This.Item.Set'. This settings allow to use any part of the matching item set name as the section name, e.g. 'This', 'Item' or 'Set'."] = "Les noms d'ensemble de PT3 ressemble à 'Ceci.Est.Un.Ensemble'. Ce réglage permet d'utiliser n'importe quelle partie comme nom de section, e.g. 'Ceci', 'Est', 'Un' ou 'Ensemble'."
 L["Section category"] = "Catégorie de la section"
 L["Sets to exclude"] = "Ensemble(s) à exclure"
 L["Sets to include"] = "Ensemble(s) à inclure"
@@ -104,6 +103,9 @@ L["Use this section to create a brand new rule."] = "Utilisez cette section pour
 -- no translation
 
 ------------------------ koKR ------------------------
+-- no translation
+
+------------------------ ptBR ------------------------
 -- no translation
 end
 
