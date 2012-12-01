@@ -132,211 +132,213 @@ end
 -- Options
 --------------------------------------------------------------------------------
 
-local options
+function filter:UpdateOptions() end
+
 function filter:GetOptions()
-	if not options then
-		local newName
-		options = {
-			newRule = {
-				type = 'group',
-				name = L["New Rule"],
-				desc = L["Use this section to create a brand new rule."],
-				inline = true,
-				order = 1,
-				args = {
-					name = {
-						type = 'input',
-						name = L['Name'],
-						desc = L["The name of the rule to create. This is purely informative."],
-						order = 10,
-						get = function() return newName end,
-						set = function(_, value) newName = value ~= "" and value or nil end,
-					},
-					create = {
-						type = 'execute',
-						name = L['Create'],
-						order = 20,
-						func = function()
-							local rule = self.db.profile.rules[newName]
-							rule.name = newName
-							newName = nil
-							self:UpdateRules()
-						end,
-						disabled = function() return not newName or rawget(self.db.profile.rules, newName) end,
-					},
+	local newName
+	local options = {
+		newRule = {
+			type = 'group',
+			name = L["New Rule"],
+			desc = L["Use this section to create a brand new rule."],
+			inline = true,
+			order = 1,
+			args = {
+				name = {
+					type = 'input',
+					name = L['Name'],
+					desc = L["The name of the rule to create. This is purely informative."],
+					order = 10,
+					get = function() return newName end,
+					set = function(_, value) newName = value ~= "" and value or nil end,
+				},
+				create = {
+					type = 'execute',
+					name = L['Create'],
+					order = 20,
+					func = function()
+						local rule = self.db.profile.rules[newName]
+						rule.name = newName
+						newName = nil
+						self:UpdateRules()
+					end,
+					disabled = function() return not newName or rawget(self.db.profile.rules, newName) end,
 				},
 			},
-		}
-		filter:UpdateOptions()
+		},
+	}
+
+	local categoryValues = {}
+	for name in addon:IterateCategories() do
+		categoryValues[name] = name
 	end
+
+	local ruleOptionProto = {
+		type = 'group',
+		inline = true,
+		set = "Set",
+		get = "Get",
+		disabled = false,
+		args = {
+			dynamicSection = {
+				type = 'toggle',
+				name = L['Dynamic section name'],
+				desc = L["Check this to have the section name calculated from matching item set. If unchecked, you provide a fixed section name."],
+				order = 10,			
+			},
+			section = {
+				type = 'input',
+				name = L['Fixed section name'],
+				desc = L["Fixed bag section name."],
+				order = 20,
+				validate = function(_, value) return value and value:trim() ~= "" end,
+				hidden = function(info) return info.handler:GetDB(info).dynamicSection end,
+			},
+			sectionIndex = {
+				type = 'input',
+				name = L['Dynamic section name index'],
+				desc = L["PT3 set names look like 'This.Item.Set'. This settings allow to use any part of the matching item set name as the section name, e.g. 'This', 'Item' or 'Set'."],
+				usage = L["Positive numbers are counted from the beginning of the set name (1 = first part). Negative from end (-1 = last part)."],
+				order = 20,
+				validate = function(_, value) return (tonumber(value) or 0) ~= 0 or format(L["Invalid index: %q"], value) end,
+				get = function(info) return tostring(info.handler:Get(info)) end,
+				set = function(info, value) return info.handler:Set(info, tonumber(value)) end,
+				hidden = function(info) return not info.handler:GetDB(info).dynamicSection end,
+			},
+			category = {
+				type = 'select',
+				name = L['Section category'],
+				order = 30,
+				values = categoryValues,
+			},
+			priority = {
+				type = 'range',
+				name = L['Priority'],
+				desc = L["The rule with the highest priority is applied first. The displaying ordre reflects the rule order."],
+				order = 35,
+				min = 0,
+				max = 100,
+				step = 1,
+				bigStep = 5,
+			},
+			include = {
+				type = 'input',
+				name = L['Sets to include'],
+				desc = L["An item matches this rule if it is contained in any of the listed sets."],
+				usage = L["Enter PT3 set names separated by spaces, commas or newlines."],
+				multiline = true,
+				order = 40,
+				set = 'SetSets',
+				get = 'GetSets',
+				validate = 'ValidateSets',
+			},
+			exclude = {
+				type = 'input',
+				name = L['Sets to exclude'],
+				desc = L["An item doesn't match this rule if it is contained in any of the listed sets."],
+				usage = L["Enter PT3 set names separated by spaces, commas or newlines."],
+				multiline = true,
+				order = 50,
+				set = 'SetSets',
+				get = 'GetSets',
+				validate = 'ValidateSets',
+			},
+			delete = {
+				type = 'execute',
+				name = L['Delete'],
+				desc = L["Definitively delete this rule."],
+				order = -1,
+				confirm = true,
+				confirmText = L["Do you really want to delete this rule ?"],
+				func = 'DeleteRule',
+			},
+		},
+	}
+
+	local handlerProto = {}
+
+	function handlerProto:GetDB(info)
+		return filter.db.profile.rules[self.ruleKey], info.arg or info[#info]
+	end
+
+	function handlerProto:Get(info)
+		local db, key = self:GetDB(info)
+		return db[key]
+	end
+
+	function handlerProto:Set(info, value)
+		local db, key = self:GetDB(info)
+		db[key] = value
+		filter:UpdateRules()
+	end
+
+	function handlerProto:GetSets(info)
+		return table.concat(self:Get(info), "\n")
+	end
+
+	function handlerProto:SetSets(info, value)
+		local sets = self:Get(info)
+		wipe(sets)
+		for set in gmatch(value, "[^\n]+") do
+			tinsert(sets, strtrim(set))
+		end
+		filter:UpdateRules()
+	end
+
+	function handlerProto:ValidateSets(info, value)
+		for set in gmatch(value, "[^\n]+") do
+			set = strtrim(set)
+			if not LPT:GetSetString(set) then
+				return format(L["Unknown item set: %s"], set)
+			end
+		end
+		return true
+	end
+
+	function handlerProto:DeleteRule(info)
+		filter.db.profile.rules[self.ruleKey] = nil
+		filter:UpdateRules()
+	end
+	
+	local AceConfigRegistry = LibStub('AceConfigRegistry-3.0')
+
+	local ruleOptionMeta = { __index = ruleOptionProto }
+	local handlerMeta = { __index = handlerProto }
+
+	local ours = {}
+	local pool = {}
+	function self:UpdateOptions()
+		for key, option in pairs(ours) do
+			if not rawget(self.db.profile.rules, key) then
+				pool[option] = true
+				ours[key] = nil
+				options[key] = nil
+			end
+		end
+		for key, rule in pairs(self.db.profile.rules) do
+			local option = options[key]
+			if not option then
+				option = next(pool)
+				if option then
+					pool[option] = nil
+				else
+					option = setmetatable({handler = setmetatable({}, handlerMeta)}, ruleOptionMeta)
+					ours[key] = option
+				end
+				option.name = rule.name
+				option.handler.ruleKey = key
+				options[key] = option
+			end
+			option.order = 100 + rule.priority
+		end
+		AceConfigRegistry:NotifyChange(addonName)
+		return options
+	end
+	
+	function self:GetOptions()
+		return options
+	end
+
+	self:UpdateOptions()
 	return options
 end
-
-local categoryValues = {}
-for name in addon:IterateCategories() do
-	categoryValues[name] = name
-end
-
-local ruleOptionProto = {
-	type = 'group',
-	inline = true,
-	set = "Set",
-	get = "Get",
-	disabled = false,
-	args = {
-		dynamicSection = {
-			type = 'toggle',
-			name = L['Dynamic section name'],
-			desc = L["Check this to have the section name calculated from matching item set. If unchecked, you provide a fixed section name."],
-			order = 10,			
-		},
-		section = {
-			type = 'input',
-			name = L['Fixed section name'],
-			desc = L["Fixed bag section name."],
-			order = 20,
-			validate = function(_, value) return value and value:trim() ~= "" end,
-			hidden = function(info) return info.handler:GetDB(info).dynamicSection end,
-		},
-		sectionIndex = {
-			type = 'input',
-			name = L['Dynamic section name index'],
-			desc = L["PT3 set names look like 'This.Item.Set'. This settings allow to use any part of the matching item set name as the section name, e.g. 'This', 'Item' or 'Set'."],
-			usage = L["Positive numbers are counted from the beginning of the set name (1 = first part). Negative from end (-1 = last part)."],
-			order = 20,
-			validate = function(_, value) return (tonumber(value) or 0) ~= 0 or format(L["Invalid index: %q"], value) end,
-			get = function(info) return tostring(info.handler:Get(info)) end,
-			set = function(info, value) return info.handler:Set(info, tonumber(value)) end,
-			hidden = function(info) return not info.handler:GetDB(info).dynamicSection end,
-		},
-		category = {
-			type = 'select',
-			name = L['Section category'],
-			order = 30,
-			values = categoryValues,
-		},
-		priority = {
-			type = 'range',
-			name = L['Priority'],
-			desc = L["The rule with the highest priority is applied first. The displaying ordre reflects the rule order."],
-			order = 35,
-			min = 0,
-			max = 100,
-			step = 1,
-			bigStep = 5,
-		},
-		include = {
-			type = 'input',
-			name = L['Sets to include'],
-			desc = L["An item matches this rule if it is contained in any of the listed sets."],
-			usage = L["Enter PT3 set names separated by spaces, commas or newlines."],
-			multiline = true,
-			order = 40,
-			set = 'SetSets',
-			get = 'GetSets',
-			validate = 'ValidateSets',
-		},
-		exclude = {
-			type = 'input',
-			name = L['Sets to exclude'],
-			desc = L["An item doesn't match this rule if it is contained in any of the listed sets."],
-			usage = L["Enter PT3 set names separated by spaces, commas or newlines."],
-			multiline = true,
-			order = 50,
-			set = 'SetSets',
-			get = 'GetSets',
-			validate = 'ValidateSets',
-		},
-		delete = {
-			type = 'execute',
-			name = L['Delete'],
-			desc = L["Definitively delete this rule."],
-			order = -1,
-			confirm = true,
-			confirmText = L["Do you really want to delete this rule ?"],
-			func = 'DeleteRule',
-		},
-	},
-}
-
-local handlerProto = {}
-
-function handlerProto:GetDB(info)
-	return filter.db.profile.rules[self.ruleKey], info.arg or info[#info]
-end
-
-function handlerProto:Get(info)
-	local db, key = self:GetDB(info)
-	return db[key]
-end
-
-function handlerProto:Set(info, value)
-	local db, key = self:GetDB(info)
-	db[key] = value
-	filter:UpdateRules()
-end
-
-function handlerProto:GetSets(info)
-	return table.concat(self:Get(info), "\n")
-end
-
-function handlerProto:SetSets(info, value)
-	local sets = self:Get(info)
-	wipe(sets)
-	for set in gmatch(value, "[^\n]+") do
-		tinsert(sets, strtrim(set))
-	end
-	filter:UpdateRules()
-end
-
-function handlerProto:ValidateSets(info, value)
-	for set in gmatch(value, "[^\n]+") do
-		set = strtrim(set)
-		if not LPT:GetSetString(set) then
-			return format(L["Unknown item set: %s"], set)
-		end
-	end
-	return true
-end
-
-function handlerProto:DeleteRule(info)
-	filter.db.profile.rules[self.ruleKey] = nil
-	filter:UpdateRules()
-end
-
-local ruleOptionMeta = { __index = ruleOptionProto }
-local handlerMeta = { __index = handlerProto }
-
-local AceConfigRegistry = LibStub('AceConfigRegistry-3.0')
-
-local ours = {}
-local pool = {}
-function filter:UpdateOptions()
-	if not options then return end
-	for key, option in pairs(ours) do
-		if not rawget(self.db.profile.rules, key) then
-			pool[option] = true
-			ours[key] = nil
-			options[key] = nil
-		end
-	end
-	for key, rule in pairs(self.db.profile.rules) do
-		local option = options[key]
-		if not option then
-			option = next(pool)
-			if option then
-				pool[option] = nil
-			else
-				option = setmetatable({handler = setmetatable({}, handlerMeta)}, ruleOptionMeta)
-				ours[key] = option
-			end
-			option.name = rule.name
-			option.handler.ruleKey = key
-			options[key] = option
-		end
-		option.order = 100 + rule.priority
-	end
-	AceConfigRegistry:NotifyChange(addonName)
-end
-
-
