@@ -94,7 +94,7 @@ local function GetSetPart(index, ...)
 	local num = select('#', ...)
 	if index < 0 then
 		index = num + 1 + index
-	elseif idnex > num then
+	elseif index > num then
 		index = num
 	end
 	if index < 1 then
