@@ -10,7 +10,7 @@ local addon = LibStub('AceAddon-3.0'):GetAddon('AdiBags')
 
 -- The filter itself
 
-local filter = addon:RegisterFilter("PT3Filter", 80, 'AceEvent-3.0')
+local filter = addon:RegisterFilter("PT3Filter", 80, 'ABEvent-1.0')
 filter.uiName = L['LibPeriodicTable-3.1 filter']
 filter.uiDesc = L['Dispatch items using rules based on LibPeriodicTable-3.1 item sets.']
 
