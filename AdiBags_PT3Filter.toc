@@ -1,4 +1,4 @@
-## Interface: 80200
+## Interface: 80205
 
 ## Title: AdiBags - PT3 filter
 ## Notes: LibPeriodicTable-3.1 item filters for AdiBags.
@@ -16,4 +16,3 @@ libs\LibPeriodicTable-3.1\modules.xml
 
 Localization.lua
 AdiBags_PT3Filter.lua
-
