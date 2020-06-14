@@ -1,4 +1,4 @@
-## Interface: 11302
+## Interface: 11304
 
 ## Title: AdiBags - PT3 filter
 ## Notes: LibPeriodicTable-3.1 item filters for AdiBags.
