@@ -1,6 +1,6 @@
 --[[
 AdiBags_PT3Filter - LibPeriodicTable-3.1 item filters for AdiBags.
-Copyright 2010 Adirelle (adirelle@tagada-team.net)
+Copyright 2010-2021 Adirelle (adirelle@gmail.com)
 All rights reserved.
 --]]
 

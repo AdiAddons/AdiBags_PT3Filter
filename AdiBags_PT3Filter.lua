@@ -1,6 +1,6 @@
 --[[
 AdiBags_PT3Filter - LibPeriodicTable-3.1 item filters for AdiBags.
-Copyright 2010 Adirelle (adirelle@tagada-team.net)
+Copyright 2010-2021 Adirelle (adirelle@gmail.com)
 All rights reserved.
 --]]
 
@@ -184,7 +184,7 @@ function filter:GetOptions()
 				type = 'toggle',
 				name = L['Dynamic section name'],
 				desc = L["Check this to have the section name calculated from matching item set. If unchecked, you provide a fixed section name."],
-				order = 10,			
+				order = 10,
 			},
 			section = {
 				type = 'input',
@@ -299,7 +299,7 @@ function filter:GetOptions()
 		filter.db.profile.rules[self.ruleKey] = nil
 		filter:UpdateRules()
 	end
-	
+
 	local AceConfigRegistry = LibStub('AceConfigRegistry-3.0')
 
 	local ruleOptionMeta = { __index = ruleOptionProto }
@@ -334,7 +334,7 @@ function filter:GetOptions()
 		AceConfigRegistry:NotifyChange(addonName)
 		return options
 	end
-	
+
 	function self:GetOptions()
 		return options
 	end
